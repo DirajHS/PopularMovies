@@ -1,0 +1,26 @@
+<resources>
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+
+    <dimen name="hv_spacing">0dp</dimen>
+    <!--This width should match the value used in API request for poster image -->
+    <dimen name="column_width">180dp</dimen>
+    <dimen name="image_height">300dp</dimen>
+    <dimen name="elevation">4dp</dimen>
+    <dimen name="divider_margin_top">5dp</dimen>
+    <dimen name="toolbar_height">180dp</dimen>
+
+    <dimen name="single_movie_thumbnail_height">170dp</dimen>
+    <dimen name="single_movie_thumbnail_width">125dp</dimen>
+
+    <dimen name="margin">14dp</dimen>
+    <dimen name="margin_overview">10dp</dimen>
+    <dimen name="divider">1dp</dimen>
+    <dimen name="margin_details_body">2dp</dimen>
+    <dimen name="margin_top_details">8dp</dimen>
+
+    <dimen name="rating_text">32sp</dimen>
+    <dimen name="duration_text">16sp</dimen>
+    <dimen name="overview_text">24sp</dimen>
+</resources>

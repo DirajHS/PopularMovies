@@ -1,0 +1,15 @@
+<resources>
+
+    <string name="app_name">Popular Movies</string>
+    <string name="rating_header">Rating: </string>
+    <string name="released_header">Released: </string>
+    <string name="overview_header">Overview</string>
+    <string name="numColumns">2</string>
+    <string name="refresh">Refresh Content</string>
+    <string name="refreshing">Refreshing &#8230;</string>
+    <string name="thumbnail_description">Movie Thumbnail</string>
+    <string name="toast_popular">Showing popular movies&#8230;</string>
+    <string name="toast_top_rated">Showing top rated movies&#8230;</string>
+    <string name="network_unavailable">Network Unavailable !!!</string>
+    <string name="network_unavailable_selected">Network Unavailable !!! Displaying limited items !!!</string>
+</resources>
