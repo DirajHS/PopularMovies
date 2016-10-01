@@ -9,6 +9,6 @@
     android:columnWidth="@dimen/column_width"
     android:horizontalSpacing="@dimen/hv_spacing"
     android:numColumns="auto_fit"
-    tools:context="com.diraj.popularmovies.HomeActivity">
+    tools:context="com.diraj.popularmovies.ui.HomeActivity">
 
 </GridView>

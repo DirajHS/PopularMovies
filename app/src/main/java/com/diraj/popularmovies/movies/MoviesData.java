@@ -2,13 +2,14 @@
  * Created by Diraj H S on 9/13/16.
  * Copyright (c) 2016. All rights reserved.
  */
-package com.diraj.popularmovies;
+package com.diraj.popularmovies.movies;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
 public class MoviesData implements Parcelable{
 
+    private int mId;
     private String movieTitle;
     private String movieOverview;
     private String moviePosterPath;
@@ -28,6 +29,7 @@ public class MoviesData implements Parcelable{
     };
 
     private MoviesData(Parcel in) {
+        this.mId = in.readInt();
         this.movieTitle = in.readString();
         this.movieOverview = in.readString();
         this.moviePosterPath = in.readString();
@@ -35,8 +37,9 @@ public class MoviesData implements Parcelable{
         this.movieRating = in.readDouble();
         this.movieBackdropPath = in.readString();
     }
-    public MoviesData(String title, String overview, String posterPath, double rating, String releaseDate,
+    public MoviesData(int id, String title, String overview, String posterPath, double rating, String releaseDate,
     String backdrop) {
+        this.mId = id;
         this.movieTitle = title;
         this.movieOverview = overview;
         this.moviePosterPath = posterPath;
@@ -44,6 +47,8 @@ public class MoviesData implements Parcelable{
         this.movieReleaseDate = releaseDate;
         this.movieBackdropPath = backdrop;
     }
+
+    public int getMovieId() { return mId; }
 
     public String getMoviePosterPath() {
         return moviePosterPath;
@@ -76,6 +81,7 @@ public class MoviesData implements Parcelable{
 
     @Override
     public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeInt(mId);
         parcel.writeString(movieTitle);
         parcel.writeString(movieOverview);
         parcel.writeString(moviePosterPath);

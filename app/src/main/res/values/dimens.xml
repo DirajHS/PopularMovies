@@ -16,11 +16,18 @@
 
     <dimen name="margin">14dp</dimen>
     <dimen name="margin_overview">10dp</dimen>
+    <dimen name="margin_top">20dp</dimen>
     <dimen name="divider">1dp</dimen>
     <dimen name="margin_details_body">2dp</dimen>
     <dimen name="margin_top_details">8dp</dimen>
+    <dimen name="trailer_padding">16dp</dimen>
 
     <dimen name="rating_text">32sp</dimen>
     <dimen name="duration_text">16sp</dimen>
     <dimen name="overview_text">24sp</dimen>
+    <dimen name="author">20sp</dimen>
+    <dimen name="review_size">18sp</dimen>
+
+    <dimen name="trailer_width">150dp</dimen>
+    <dimen name="trailer_height">100dp</dimen>
 </resources>

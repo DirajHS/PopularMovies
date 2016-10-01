@@ -2,13 +2,17 @@
  * Created by Diraj H S on 9/13/16.
  * Copyright (c) 2016. All rights reserved.
  */
-package com.diraj.popularmovies;
+package com.diraj.popularmovies.ui;
 
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -17,10 +21,27 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.Toast;
 
+import com.diraj.popularmovies.AnimationHandling;
+import com.diraj.popularmovies.AppConstants;
+import com.diraj.popularmovies.MoviesList;
+import com.diraj.popularmovies.R;
+import com.diraj.popularmovies.database.MoviesDBContract;
+import com.diraj.popularmovies.movies.MovieDataDownloader;
+import com.diraj.popularmovies.movies.MoviesAdapter;
+import com.diraj.popularmovies.movies.MoviesData;
+import com.diraj.popularmovies.review.ReviewsData;
+import com.diraj.popularmovies.review.ReviewsList;
+import com.diraj.popularmovies.trailer.TrailersData;
+import com.diraj.popularmovies.trailer.TrailersList;
+
 import java.util.ArrayList;
 import java.util.List;
 
-public class HomeActivity extends AppCompatActivity implements MoviesList {
+import retrofit2.Call;
+import retrofit2.http.Path;
+import retrofit2.http.Query;
+
+public class HomeActivity extends AppCompatActivity implements MoviesList, LoaderManager.LoaderCallbacks<Cursor> {
 
     private GridView mGridView;
     private List<MoviesData> mMovieList;
@@ -56,7 +77,7 @@ public class HomeActivity extends AppCompatActivity implements MoviesList {
 
     private void startNextActivity(MoviesData object) {
         Intent intent = new Intent(this, SingleMovieActivity.class);
-        intent.putExtra(AppConstants.Intent_Extra_Parcel, object);
+        intent.putExtra(AppConstants.INTENT_EXTRA_PARCEL, object);
         startActivity(intent);
         AnimationHandling.animateScreen(this, AnimationHandling.ANIM_TYPE.START);
     }
@@ -67,10 +88,55 @@ public class HomeActivity extends AppCompatActivity implements MoviesList {
         AnimationHandling.animateScreen(this, AnimationHandling.ANIM_TYPE.CLOSE);
     }
 
+    private void updateMenu(MenuItem menuItem) {
+        if(!mToggleSort) {
+            menuItem.setTitle(getString(R.string.sort));
+        } else {
+            menuItem.setTitle(getString(R.string.sort));
+        }
+    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menus, menu);
+        updateMenu(menu.findItem(R.id.sort_top_rated));
         return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        ArrayList<MoviesData> moviesData = new ArrayList<>();
+        data.moveToFirst();
+        do {
+            int id;
+            String title, overview, poster, release, backdrop, ratingString;
+            id = data.getInt(MoviesDBContract.MovieDBEntry.MOVIE_ID_COLUMN);
+            title = data.getString(MoviesDBContract.MovieDBEntry.MOVIE_TITLE_COLUMN);
+            poster = data.getString(MoviesDBContract.MovieDBEntry.MOVIE_POSTER_PATH_COLUMN);
+            release = data.getString(MoviesDBContract.MovieDBEntry.MOVIE_RELEASE_DATE_COLUMN);
+            backdrop = data.getString(MoviesDBContract.MovieDBEntry.MOVIE_BACKDROP_PATH_COLUMN);
+            ratingString = data.getString(MoviesDBContract.MovieDBEntry.MOVIE_VOTE_AVERAGE_COLUMN);
+            overview = data.getString(MoviesDBContract.MovieDBEntry.MOVIE_OVERVIEW_COLUMN);
+            Double rating = Double.parseDouble(ratingString);
+            MoviesData movieData = new MoviesData(id, title, overview, poster, rating, release, backdrop);
+            moviesData.add(movieData);
+        }while(data.moveToNext());
+        mMovieList = moviesData;
+        setGridViewAdapter();
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        return new CursorLoader(this,
+                MoviesDBContract.MovieDBEntry.CONTENT_URI,
+                MoviesDBContract.MovieDBEntry.MOVIE_COLUMNS,
+                null,
+                null,
+                null);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        loader = null;
     }
 
     @Override
@@ -85,10 +151,16 @@ public class HomeActivity extends AppCompatActivity implements MoviesList {
                 mToggleSort = !mToggleSort;
                 if (mToggleSort) {
                     showToast(getString(R.string.toast_popular));
+                    updateMenu(item);
                 } else {
                     showToast(getString(R.string.toast_top_rated));
+                    updateMenu(item);
                 }
                 startDownloadAndDisplayThread(mToggleSort);
+                break;
+
+            case R.id.sort_favourites:
+                getSupportLoaderManager().initLoader(0, null, this);
                 break;
 
             case R.id.refresh:
@@ -125,9 +197,9 @@ public class HomeActivity extends AppCompatActivity implements MoviesList {
         mGridView.setOnItemClickListener(mGridViewClickListener);
 
         if (savedInstance != null) {
-            mMovieList = savedInstance.getParcelableArrayList(AppConstants.Movies_List);
-            mToggleSort = savedInstance.getBoolean(AppConstants.Toggle_Sort);
-            mGridSelectedPosition = savedInstance.getInt(AppConstants.Grid_Position);
+            mMovieList = savedInstance.getParcelableArrayList(AppConstants.MOVIES_LIST);
+            mToggleSort = savedInstance.getBoolean(AppConstants.TOGGLE_SORT);
+            mGridSelectedPosition = savedInstance.getInt(AppConstants.GRID_POSITION);
             setGridViewAdapter();
             mGridView.smoothScrollToPosition(mGridSelectedPosition);
         } else {
@@ -139,10 +211,10 @@ public class HomeActivity extends AppCompatActivity implements MoviesList {
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        outState.putInt(AppConstants.Grid_Position, mGridView.getFirstVisiblePosition());
-        outState.putBoolean(AppConstants.Toggle_Sort, mToggleSort);
+        outState.putInt(AppConstants.GRID_POSITION, mGridView.getFirstVisiblePosition());
+        outState.putBoolean(AppConstants.TOGGLE_SORT, mToggleSort);
         ArrayList<MoviesData> moviesDatas = new ArrayList<>(mMovieList);
-        outState.putParcelableArrayList(AppConstants.Movies_List, moviesDatas);
+        outState.putParcelableArrayList(AppConstants.MOVIES_LIST, moviesDatas);
         super.onSaveInstanceState(outState);
     }
 
@@ -161,5 +233,25 @@ public class HomeActivity extends AppCompatActivity implements MoviesList {
     public void downloadedMoviesList(List<MoviesData> moviesDataArrayList) {
         mMovieList = moviesDataArrayList;
         setGridViewAdapter();
+    }
+
+    @Override
+    public Call<TrailersList> getTrailers(@Path("id") long id, @Query("api_key") String apiKey) {
+        return null;
+    }
+
+    @Override
+    public void downloadedTrailersData(List<TrailersData> moviesTrailersArrayList) {
+
+    }
+
+    @Override
+    public Call<ReviewsList> getReviews(@Path("id") long id, @Query("api_key") String apiKey) {
+        return null;
+    }
+
+    @Override
+    public void downloadedReviewsData(List<ReviewsData> moviesReviewArrayList) {
+
     }
 }

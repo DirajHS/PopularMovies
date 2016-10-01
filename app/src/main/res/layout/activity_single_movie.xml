@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background"
     android:orientation="vertical"
-    tools:context="com.diraj.popularmovies.SingleMovieActivity">
+    tools:context="com.diraj.popularmovies.ui.SingleMovieActivity">
 
     <ScrollView
         android:id="@+id/scrollView"
@@ -81,8 +82,38 @@
                     android:textColor="@color/colorText"
                     android:textSize="@dimen/duration_text" />
 
+                <ImageView
+                    android:id="@+id/favourite"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:srcCompat="@mipmap/ic_unliked"
+                    android:layout_below="@+id/release_date_value_text"
+                    android:layout_alignStart="@+id/release_date_value_text"
+                    android:layout_marginTop="@dimen/margin_top"
+                    android:onClick="updateFavourites"/>
+
             </RelativeLayout>
 
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/divider"
+                android:layout_marginTop="@dimen/divider_margin_top"
+                android:background="@color/colorDivider" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin"
+                android:layout_marginTop="@dimen/margin"
+                android:text="@string/trailers"
+                android:textColor="@color/colorRed"
+                android:textSize="@dimen/overview_text" />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/trailers_recyclerView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:scrollbars="horizontal"/>
             <View
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/divider"
@@ -107,6 +138,28 @@
                 android:layout_marginTop="5dp"
                 android:textColor="@color/colorText"
                 android:textSize="@dimen/overview_text" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/divider"
+                android:layout_marginTop="@dimen/divider_margin_top"
+                android:background="@color/colorDivider" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin"
+                android:layout_marginTop="@dimen/margin"
+                android:text="@string/reviews"
+                android:textColor="@color/colorRed"
+                android:textSize="@dimen/overview_text" />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/reviews_recyclerView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:scrollbars="vertical"/>
         </LinearLayout>
     </ScrollView>
+
 </LinearLayout>

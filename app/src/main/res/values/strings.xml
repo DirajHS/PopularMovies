@@ -4,6 +4,8 @@
     <string name="rating_header">Rating: </string>
     <string name="released_header">Released: </string>
     <string name="overview_header">Overview</string>
+    <string name="trailers">Trailers</string>
+    <string name="reviews">Reviews</string>
     <string name="numColumns">2</string>
     <string name="refresh">Refresh Content</string>
     <string name="refreshing">Refreshing &#8230;</string>
@@ -12,4 +14,11 @@
     <string name="toast_top_rated">Showing top rated movies&#8230;</string>
     <string name="network_unavailable">Network Unavailable !!!</string>
     <string name="network_unavailable_selected">Network Unavailable !!! Displaying limited items !!!</string>
+    <string name="favourites_marked">Marked the movie as favourite!!!</string>
+    <string name="favourites_unmarked">Unmarked the movie from favourites!!!</string>
+    <string name="sort">Popular / Top Rated</string>
+    <string name="sort_favourites">Sort By Favourites</string>
+    <string name="sort_popular">Sort By Popular Movies</string>
+    <string name="sort_top_rated">Sort By Top Rated</string>
+    <string name="share">Share</string>
 </resources>
