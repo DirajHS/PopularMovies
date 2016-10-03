@@ -10,13 +10,17 @@ import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.Toast;
@@ -41,12 +45,13 @@ import retrofit2.Call;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
-public class HomeActivity extends AppCompatActivity implements MoviesList, LoaderManager.LoaderCallbacks<Cursor> {
+public class HomeFragment extends android.support.v4.app.Fragment implements MoviesList, LoaderManager.LoaderCallbacks<Cursor> {
 
     private GridView mGridView;
     private List<MoviesData> mMovieList;
     private int mGridSelectedPosition;
     private boolean mToggleSort;
+    private boolean mTwoPane;
 
     private AdapterView.OnItemClickListener mGridViewClickListener = new AdapterView.OnItemClickListener() {
         @Override
@@ -60,33 +65,49 @@ public class HomeActivity extends AppCompatActivity implements MoviesList, Loade
     }
 
     private void showToast(String message) {
-        Toast toast = Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT);
+        Toast toast = Toast.makeText(getContext(), message, Toast.LENGTH_SHORT);
         toast.show();
     }
 
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_home);
-
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        Log.d(AppConstants.APP_NAME, "onCreateView Called");
+        View layout = inflater.inflate(R.layout.activity_home, container, false);
+        mGridView = (GridView) layout.findViewById(R.id.gridView_Layout);
+        mGridView.setOnItemClickListener(mGridViewClickListener);
         if (isNetworkAvailable()) {
             updateDisplay(savedInstanceState);
         } else
             showToast(getString(R.string.network_unavailable));
-    }
 
-    private void startNextActivity(MoviesData object) {
-        Intent intent = new Intent(this, SingleMovieActivity.class);
-        intent.putExtra(AppConstants.INTENT_EXTRA_PARCEL, object);
-        startActivity(intent);
-        AnimationHandling.animateScreen(this, AnimationHandling.ANIM_TYPE.START);
+        mTwoPane = getActivity().findViewById(R.id.activity_single_movie) != null ;
+
+        return layout;
     }
 
     @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        AnimationHandling.animateScreen(this, AnimationHandling.ANIM_TYPE.CLOSE);
+    public void onStart() {
+        super.onStart();
+        setHasOptionsMenu(true);
+        setRetainInstance(true);
     }
+
+    private void startNextActivity(MoviesData object) {
+        if(mTwoPane) {
+            Bundle arguments = new Bundle();
+            arguments.putParcelable(AppConstants.INTENT_EXTRA_PARCEL, object);
+            SingleMovieFragment singleMovieFragment = new SingleMovieFragment();
+            singleMovieFragment.setArguments(arguments);
+            getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.activity_single_movie, singleMovieFragment).commit();
+        } else {
+            Intent intent = new Intent(getActivity(), SingleMovieActivity.class);
+            intent.putExtra(AppConstants.INTENT_EXTRA_PARCEL, object);
+            startActivity(intent);
+            AnimationHandling.animateScreen(getContext(), AnimationHandling.ANIM_TYPE.START);
+        }
+    }
+
 
     private void updateMenu(MenuItem menuItem) {
         if(!mToggleSort) {
@@ -96,14 +117,19 @@ public class HomeActivity extends AppCompatActivity implements MoviesList, Loade
         }
     }
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menus, menu);
+    public void onCreateOptionsMenu(Menu menu, MenuInflater menuInflater) {
+        if(!menu.hasVisibleItems()) {
+            if(menu.findItem(R.id.refresh) != null)
+                menu.removeItem(R.id.refresh);
+            menuInflater.inflate(R.menu.menus, menu);
+        }
         updateMenu(menu.findItem(R.id.sort_top_rated));
-        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        if(data.getCount() == 0)
+            return;
         ArrayList<MoviesData> moviesData = new ArrayList<>();
         data.moveToFirst();
         do {
@@ -126,7 +152,7 @@ public class HomeActivity extends AppCompatActivity implements MoviesList, Loade
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        return new CursorLoader(this,
+        return new CursorLoader(getContext(),
                 MoviesDBContract.MovieDBEntry.CONTENT_URI,
                 MoviesDBContract.MovieDBEntry.MOVIE_COLUMNS,
                 null,
@@ -160,7 +186,7 @@ public class HomeActivity extends AppCompatActivity implements MoviesList, Loade
                 break;
 
             case R.id.sort_favourites:
-                getSupportLoaderManager().initLoader(0, null, this);
+                getActivity().getSupportLoaderManager().initLoader(0, null, this);
                 break;
 
             case R.id.refresh:
@@ -177,14 +203,14 @@ public class HomeActivity extends AppCompatActivity implements MoviesList, Loade
     }
 
     @Override
-    protected void onPause() {
+    public void onPause() {
         super.onPause();
         if (isNetworkAvailable())
             mGridSelectedPosition = mGridView.getFirstVisiblePosition();
     }
 
     @Override
-    protected void onResume() {
+    public void onResume() {
         super.onResume();
         if (isNetworkAvailable())
             mGridView.smoothScrollToPosition(mGridSelectedPosition);
@@ -193,10 +219,7 @@ public class HomeActivity extends AppCompatActivity implements MoviesList, Loade
     }
 
     private void updateDisplay(Bundle savedInstance) {
-        mGridView = (GridView) findViewById(R.id.gridView_Layout);
-        mGridView.setOnItemClickListener(mGridViewClickListener);
-
-        if (savedInstance != null) {
+        if (savedInstance != null && isNetworkAvailable()) {
             mMovieList = savedInstance.getParcelableArrayList(AppConstants.MOVIES_LIST);
             mToggleSort = savedInstance.getBoolean(AppConstants.TOGGLE_SORT);
             mGridSelectedPosition = savedInstance.getInt(AppConstants.GRID_POSITION);
@@ -210,23 +233,25 @@ public class HomeActivity extends AppCompatActivity implements MoviesList, Loade
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        outState.putInt(AppConstants.GRID_POSITION, mGridView.getFirstVisiblePosition());
-        outState.putBoolean(AppConstants.TOGGLE_SORT, mToggleSort);
-        ArrayList<MoviesData> moviesDatas = new ArrayList<>(mMovieList);
-        outState.putParcelableArrayList(AppConstants.MOVIES_LIST, moviesDatas);
+    public void onSaveInstanceState(Bundle outState) {
+        if(isNetworkAvailable()) {
+            outState.putInt(AppConstants.GRID_POSITION, mGridView.getFirstVisiblePosition());
+            outState.putBoolean(AppConstants.TOGGLE_SORT, mToggleSort);
+            ArrayList<MoviesData> moviesDatas = new ArrayList<>(mMovieList);
+            outState.putParcelableArrayList(AppConstants.MOVIES_LIST, moviesDatas);
+        }
         super.onSaveInstanceState(outState);
     }
 
     private boolean isNetworkAvailable() {
         ConnectivityManager cm =
-                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+                (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo netInfo = cm.getActiveNetworkInfo();
         return netInfo != null && netInfo.isConnected();
     }
 
     private void setGridViewAdapter() {
-        mGridView.setAdapter(new MoviesAdapter(getApplicationContext(), mMovieList, mGridView));
+        mGridView.setAdapter(new MoviesAdapter(getContext(), mMovieList, mGridView));
     }
 
     @Override

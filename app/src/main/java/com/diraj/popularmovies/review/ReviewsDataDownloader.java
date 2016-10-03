@@ -10,7 +10,7 @@ import android.os.Looper;
 
 import com.diraj.popularmovies.AppConstants;
 import com.diraj.popularmovies.MoviesList;
-import com.diraj.popularmovies.ui.SingleMovieActivity;
+import com.diraj.popularmovies.ui.SingleMovieFragment;
 
 import java.io.IOException;
 import java.util.List;
@@ -23,11 +23,11 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class ReviewsDataDownloader extends Thread {
 
     private long mId;
-    private SingleMovieActivity mListener;
+    private SingleMovieFragment mListener;
 
-    public ReviewsDataDownloader(long movieId, SingleMovieActivity singleMovieActivity) {
+    public ReviewsDataDownloader(long movieId, SingleMovieFragment singleMovieFragment) {
         this.mId = movieId;
-        this.mListener = singleMovieActivity;
+        this.mListener = singleMovieFragment;
     }
 
     private List<ReviewsData> getReviews() {

@@ -9,7 +9,7 @@ import android.os.Looper;
 import android.util.Log;
 
 import com.diraj.popularmovies.AppConstants;
-import com.diraj.popularmovies.ui.HomeActivity;
+import com.diraj.popularmovies.ui.HomeFragment;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -30,9 +30,9 @@ public class MovieDataDownloader extends Thread {
 
     private List<MoviesData> mMoviesList;
     private boolean mGetPopular;
-    private HomeActivity mListener;
+    private HomeFragment mListener;
 
-    public MovieDataDownloader(List<MoviesData> movieList, boolean getPopular, HomeActivity activity) {
+    public MovieDataDownloader(List<MoviesData> movieList, boolean getPopular, HomeFragment activity) {
         this.mMoviesList = movieList;
         this.mGetPopular = getPopular;
         this.mListener = activity;

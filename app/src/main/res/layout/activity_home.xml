@@ -6,9 +6,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_margin="@dimen/hv_spacing"
+    android:background="@color/background"
     android:columnWidth="@dimen/column_width"
     android:horizontalSpacing="@dimen/hv_spacing"
     android:numColumns="auto_fit"
-    tools:context="com.diraj.popularmovies.ui.HomeActivity">
-
+    tools:context="com.diraj.popularmovies.ui.HomeFragment">
 </GridView>

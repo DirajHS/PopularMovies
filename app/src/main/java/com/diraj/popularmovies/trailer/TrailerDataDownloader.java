@@ -10,7 +10,7 @@ import android.os.Looper;
 
 import com.diraj.popularmovies.AppConstants;
 import com.diraj.popularmovies.MoviesList;
-import com.diraj.popularmovies.ui.SingleMovieActivity;
+import com.diraj.popularmovies.ui.SingleMovieFragment;
 
 import java.io.IOException;
 import java.util.List;
@@ -22,11 +22,11 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class TrailerDataDownloader extends Thread{
 
-    private SingleMovieActivity mListner;
+    private SingleMovieFragment mListner;
     private long mID;
-    public TrailerDataDownloader(long id, SingleMovieActivity singleMovieActivity) {
+    public TrailerDataDownloader(long id, SingleMovieFragment singleMovieFragment) {
         this.mID = id;
-        this.mListner = singleMovieActivity;
+        this.mListner = singleMovieFragment;
     }
 
     private List<TrailersData> getTrailers() {
