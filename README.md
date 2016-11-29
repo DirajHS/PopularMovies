@@ -1,6 +1,7 @@
 # Android Nanodegree Popular Movies App
 
 [![Crates.io](https://img.shields.io/crates/l/rustc-serialize.svg?maxAge=2592000)]()
+[![https://github.com/DirajHS/PopularMovies](https://travis-ci.org/DirajHS/PopularMovies.svg?branch=master)]()
 
 <p align="justify">
 This is the first and second project in Udacity's Android Developer Nanodegree. The purpose of this project was to build an app, optimized for both phone and tablets, to help users discover popular and highly rated movies on the web. It displays a scrolling grid of movie posters, launches a details screen whenever a particular movie is selected, allows users to save favorites, play trailers, and read user reviews. This app utilizes core Android user interface components and fetches movie information using themoviedb.org web API.
