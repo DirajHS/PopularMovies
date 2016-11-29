@@ -11,7 +11,7 @@ android:
       
 script:
     - ./gradlew clean assembleDebug --info
-    - ./gradlew jacocoTestReport
+    - ./gradlew build jacocoTestReport
     
 after_success:
     - bash <(curl -s https://codecov.io/bash)
